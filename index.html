@@ -2,57 +2,234 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TAMON HAZARD | SURVEILLANCE TEST</title>
+<title>TAMON HAZARD | SURVEILLANCE</title>
 <style>
-:root{color-scheme:dark;--bg:#070b0a;--panel:#111a16;--line:#335142;--lime:#c3f77a;--red:#f56a65;--muted:#94a99c}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#22372b 0%,var(--bg) 48%);color:#e9f3e9;font-family:system-ui,-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;min-height:100vh}header{border-bottom:1px solid var(--line);padding:16px clamp(14px,3vw,36px);display:flex;justify-content:space-between;align-items:center;gap:12px}small,.eyebrow{font-size:11px;letter-spacing:.16em;color:var(--lime)}h1{font-size:clamp(25px,4vw,42px);letter-spacing:.09em;margin:2px 0;font-weight:900}h1 span{color:var(--red)}.tag{border:1px solid var(--line);padding:8px 10px;font-size:11px;color:var(--muted)}main{max-width:1500px;margin:auto;padding:20px clamp(12px,3vw,32px) 50px}.warning{border:1px solid #80653b;background:#2d2517;padding:10px 13px;color:#f9d79b;font-size:13px;margin-bottom:15px}.controls{background:var(--panel);border:1px solid var(--line);padding:17px;margin-bottom:17px}.toprow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}.role{display:flex;gap:8px}.role button{background:#1c3024}.role button.active{background:var(--lime);color:#0b160e;border-color:var(--lime)}button,select{font:inherit;border:1px solid #5b8069;color:#f0f6ef;background:#263c2e;padding:12px 15px;border-radius:5px;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}button.primary{background:var(--lime);color:#0d190e;font-weight:800;border-color:var(--lime)}button.danger{border-color:#a45550;background:#40201f;color:#ffd0ce}.action{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:14px}.action label{color:var(--muted);font-size:13px}.status{color:var(--lime);font-size:13px;min-height:20px;margin-top:10px;overflow-wrap:anywhere}.status.error{color:#ff9c92}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.feed{border:1px solid var(--line);background:#0b130f;min-width:0}.feed-head{padding:10px 12px;display:flex;justify-content:space-between;gap:5px;align-items:center;border-bottom:1px solid #253b2f}.feed-head strong{font-size:12px;letter-spacing:.12em;color:var(--lime)}.state{font-size:11px;color:var(--muted)}.screen{aspect-ratio:16/9;position:relative;background:repeating-linear-gradient(0deg,#101a13,#101a13 2px,#0d150f 3px);display:grid;place-items:center;overflow:hidden}.screen video{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#080e0a}.placeholder{font-size:clamp(11px,2vw,16px);color:#5f846c;letter-spacing:.18em;text-align:center}.live .placeholder{display:none}.live .state{color:var(--lime)}.screen:after{content:'TAMON RESEARCH / TEST';position:absolute;bottom:8px;left:9px;color:#b3dbab88;font-size:9px;letter-spacing:.1em;pointer-events:none}.bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:14px;font-size:12px;color:var(--muted)}#publisherPreview{display:none}.publisher #publisherPreview{display:block}.publisher #viewerGrid{display:none}.publisher .screen{max-height:65vh}.publisher .feed{max-width:900px;margin:auto}.publisher .screen{aspect-ratio:16/9}.publisher #watchControls{display:none}.viewer #publishControls{display:none}.publisher #publishControls{display:flex}.viewer #watchControls{display:flex}#publishControls,#watchControls{display:none}#log{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;color:#91a99a;max-height:90px;overflow:auto;margin-top:10px}@media(max-width:600px){header{align-items:start}.tag{font-size:9px}.grid{gap:6px}.feed-head{padding:7px}.feed-head strong{font-size:10px}.state{font-size:9px}.placeholder{font-size:10px}.controls{padding:12px}button,select{padding:11px 10px}}
+:root{color-scheme:dark;--bg:#030912;--panel:#07131f;--line:#1b4a78;--cy:#59c8ff;--cy2:#2a8fd6;--red:#ff4d5a;--muted:#7fa0bd}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:#dcecfa;font-family:system-ui,-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+background:linear-gradient(#59c8ff0d 1px,transparent 1px) 0 0/100% 38px,linear-gradient(90deg,#59c8ff0d 1px,transparent 1px) 0 0/38px 100%,radial-gradient(circle at 50% -10%,#0f3558 0%,var(--bg) 55%);background-attachment:fixed}
+header{border-bottom:1px solid var(--line);padding:14px clamp(14px,3vw,36px);display:flex;justify-content:space-between;align-items:center;gap:12px;background:#04101cd9}
+small,.eyebrow{font-size:11px;letter-spacing:.16em;color:var(--cy)}
+h1{font-size:clamp(25px,4vw,42px);letter-spacing:.1em;margin:2px 0;font-weight:900;text-shadow:0 0 14px #59c8ff66}
+h1 span{color:var(--red);text-shadow:0 0 14px #ff4d5a77}
+.tag{border:1px solid var(--line);padding:8px 10px;font-size:11px;color:var(--muted);text-align:right}
+.tag b{color:var(--red)}
+main{max-width:1500px;margin:auto;padding:18px clamp(12px,3vw,32px) 50px}
+.warning{border:1px solid #1b4a78;border-left:3px solid var(--red);background:#0a1a2b;padding:9px 13px;color:#a9c8e3;font-size:12px;margin-bottom:14px}
+.controls{background:var(--panel);border:1px solid var(--line);padding:16px;margin-bottom:16px}
+.toprow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+.role{display:flex;gap:8px}
+.role button.active{background:var(--cy);color:#04111d;border-color:var(--cy)}
+button,select{font:inherit;border:1px solid #2f6a9c;color:#e6f3ff;background:#0f2940;padding:12px 15px;border-radius:4px;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--cy);color:#04111d;font-weight:800;border-color:var(--cy)}
+button.danger{border-color:#a4505a;background:#3a1620;color:#ffd0d4}
+button.mic.on{background:#12402e;border-color:#4fe0a0;color:#c8ffe6}
+.action{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.action label{color:var(--muted);font-size:13px}
+.status{color:var(--cy);font-size:13px;min-height:20px;margin-top:10px;overflow-wrap:anywhere}
+.status.error{color:#ff9aa2}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid.five{grid-template-columns:repeat(3,minmax(0,1fr))}
+.feed{border:1px solid var(--line);background:#050e18;min-width:0;position:relative;transition:border-color .3s,box-shadow .3s}
+.feed:before{content:'';position:absolute;inset:-1px;pointer-events:none;z-index:3;background:
+linear-gradient(var(--cy),var(--cy)) 0 0/16px 2px,linear-gradient(var(--cy),var(--cy)) 0 0/2px 16px,
+linear-gradient(var(--cy),var(--cy)) 100% 0/16px 2px,linear-gradient(var(--cy),var(--cy)) 100% 0/2px 16px,
+linear-gradient(var(--cy),var(--cy)) 0 100%/16px 2px,linear-gradient(var(--cy),var(--cy)) 0 100%/2px 16px,
+linear-gradient(var(--cy),var(--cy)) 100% 100%/16px 2px,linear-gradient(var(--cy),var(--cy)) 100% 100%/2px 16px;background-repeat:no-repeat}
+.feed.live{border-color:var(--cy2);box-shadow:0 0 20px #59c8ff2e}
+.feed-head{padding:8px 12px;display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid #12304d}
+.feed-head strong{font-size:12px;letter-spacing:.12em;color:var(--cy)}
+.feed-head .right{display:flex;align-items:center;gap:8px}
+.state{font-size:11px;color:var(--muted)}
+.live .state{color:var(--red)}
+.snd{padding:5px 9px;font-size:11px;border-radius:3px;min-width:86px}
+.snd.on{background:#12402e;border-color:#4fe0a0;color:#c8ffe6}
+.screen{aspect-ratio:16/9;position:relative;background:#06111c;display:grid;place-items:center;overflow:hidden}
+.screen:before{content:'';position:absolute;left:0;right:0;height:30%;top:-30%;z-index:2;pointer-events:none;background:linear-gradient(transparent,#59c8ff14,transparent);animation:sweep 5s linear infinite}
+@keyframes sweep{to{top:100%}}
+.screen video{width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#040a12}
+.placeholder{font-size:clamp(11px,2vw,16px);color:#3d6b92;letter-spacing:.18em;text-align:center}
+.live .placeholder{display:none}
+.ts{position:absolute;top:8px;right:10px;z-index:2;font-size:10px;letter-spacing:.08em;color:#bfe6ffcc;pointer-events:none;font-variant-numeric:tabular-nums}
+.screen:after{content:'TAMON RESEARCH / TEST';position:absolute;bottom:8px;left:9px;color:#9fd6ff88;font-size:9px;letter-spacing:.1em;pointer-events:none;z-index:2}
+#feed5{display:none}#feed5.show{display:block}
+#publisherPreview{display:none}
+.publisher #publisherPreview{display:block;max-width:900px;margin:auto}
+.publisher #viewerGrid{display:none}
+.publisher .screen{max-height:65vh}
+#publishControls,#watchControls{display:none}
+.publisher #publishControls{display:flex}
+.viewer #watchControls{display:flex}
+.bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:14px;font-size:12px;color:var(--muted)}
+#log{font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere;color:#6f93b3;max-height:90px;overflow:auto;margin-top:10px}
+#lock{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#0f3558,#02060d 70%);padding:20px}
+#lock.hidden{display:none}
+.lockbox{width:min(360px,100%);border:1px solid var(--line);background:#06121e;padding:26px 22px;text-align:center;position:relative}
+.lockbox h2{margin:6px 0 4px;letter-spacing:.12em;font-size:22px}
+.lockbox h2 span{color:var(--red)}
+.lockbox p{font-size:12px;color:var(--muted);margin:0 0 16px}
+#lockInput{width:100%;font:inherit;font-size:24px;letter-spacing:.4em;text-align:center;background:#030c15;color:var(--cy);border:1px solid var(--line);padding:12px;border-radius:4px;margin-bottom:12px}
+.lockbox button{width:100%}
+#lockMsg{min-height:20px;font-size:12px;color:#ff9aa2;margin-top:10px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@media(max-width:600px){header{align-items:start}.tag{font-size:9px}.grid{gap:6px}.feed-head{padding:6px}.feed-head strong{font-size:10px}.state{font-size:9px}.snd{min-width:0;padding:4px 6px;font-size:10px}.controls{padding:12px}button,select{padding:11px 10px}}
+@media(prefers-reduced-motion:reduce){.screen:before{animation:none}.shake{animation:none}}
 </style>
 </head>
 <body class="viewer">
-<header><div><div class="eyebrow">TAMON RESEARCH FACILITY // SECURITY DIVISION</div><h1>TAMON <span>HAZARD</span></h1><small>SURVEILLANCE SYSTEM / 2026</small></div><div class="tag">● DEVELOPMENT TEST<br>NO RECORDING</div></header>
+<div id="lock"><div class="lockbox"><div class="eyebrow">ACCESS CONTROL</div><h2>TAMON <span>HAZARD</span></h2><p>パスワードを入力してください</p>
+<input id="lockInput" type="password" inputmode="numeric" autocomplete="off" aria-label="パスワード"><button id="lockBtn" class="primary" type="button">認証</button><div id="lockMsg" role="alert"></div></div></div>
+<header><div><div class="eyebrow">TAMON RESEARCH FACILITY // SECURITY DIVISION</div><h1>TAMON <span>HAZARD</span></h1><small>SURVEILLANCE SYSTEM / 2026</small></div><div class="tag"><b>●</b> CONFIDENTIAL<br>NO RECORDING</div></header>
 <main>
-<div class="warning">⚠️ 開発テスト専用：人物・児童・個人情報を映さないでください。URLを知る第三者が接続できる可能性があります。本番運用には認証と学校の許可が必要です。</div>
+<div class="warning">関係者専用の監視画面です。録画はしません。画面・URLは外部に共有しないでください。</div>
 <section class="controls">
-<div class="toprow"><div class="role"><button id="roleViewer" class="active" type="button">▦ 図書室・視聴側</button><button id="rolePublisher" type="button">◉ 撮影側</button></div><div class="eyebrow">LIVE MONITOR / ROOM TEST</div></div>
-<div id="publishControls" class="action"><label for="cameraSelect">担当カメラ</label><select id="cameraSelect"><option value="1">CAM 01</option><option value="2">CAM 02</option><option value="3">CAM 03</option><option value="4">CAM 04</option></select><button id="startPublish" class="primary" type="button">● 配信開始</button><button id="stopPublish" class="danger" type="button" disabled>■ 配信停止</button><button id="flipCamera" type="button" disabled>カメラ切替</button></div>
-<div id="watchControls" class="action"><button id="startWatch" class="primary" type="button">▦ 監視モニター開始</button><button id="stopWatch" class="danger" type="button" disabled>■ 視聴終了</button><button id="enableSound" type="button" disabled>🔇 音声を有効にする</button></div>
-<div id="status" class="status" role="status" aria-live="polite">待機中。視聴側は「監視モニター開始」を押してください。</div><div id="log"></div>
+<div class="toprow"><div class="role"><button id="roleViewer" class="active" type="button">▦ 図書室・視聴側</button><button id="rolePublisher" type="button">◉ 撮影側</button></div><div class="eyebrow">LIVE MONITOR</div></div>
+<div id="publishControls" class="action"><label for="cameraSelect">担当カメラ</label><select id="cameraSelect"><option value="1">CAM 01</option><option value="2">CAM 02</option><option value="3">CAM 03</option><option value="4">CAM 04</option><option value="5">CAM 05</option></select><button id="micBtn" class="mic" type="button">🎙 マイク OFF</button><button id="startPublish" class="primary" type="button">● 配信開始</button><button id="stopPublish" class="danger" type="button" disabled>■ 配信停止</button><button id="flipCamera" type="button" disabled>カメラ切替</button></div>
+<div id="watchControls" class="action"><button id="startWatch" class="primary" type="button">▦ 監視モニター開始</button><button id="stopWatch" class="danger" type="button" disabled>■ 視聴終了</button><button id="fsBtn" type="button">⛶ 全画面</button></div>
+<div id="status" class="status" role="status" aria-live="polite"></div><div id="log"></div>
 </section>
-<div id="viewerGrid" class="grid">
-<div class="feed" id="feed1"><div class="feed-head"><strong>CAM 01 / ZONE A</strong><span class="state">NO SIGNAL</span></div><div class="screen"><div class="placeholder">⌁<br>NO SIGNAL</div></div></div>
-<div class="feed" id="feed2"><div class="feed-head"><strong>CAM 02 / ZONE B</strong><span class="state">NO SIGNAL</span></div><div class="screen"><div class="placeholder">⌁<br>NO SIGNAL</div></div></div>
-<div class="feed" id="feed3"><div class="feed-head"><strong>CAM 03 / ZONE C</strong><span class="state">NO SIGNAL</span></div><div class="screen"><div class="placeholder">⌁<br>NO SIGNAL</div></div></div>
-<div class="feed" id="feed4"><div class="feed-head"><strong>CAM 04 / ZONE D</strong><span class="state">NO SIGNAL</span></div><div class="screen"><div class="placeholder">⌁<br>NO SIGNAL</div></div></div>
-</div>
-<div id="publisherPreview" class="feed"><div class="feed-head"><strong>LOCAL CAMERA PREVIEW</strong><span class="state" id="localState">STANDBY</span></div><div class="screen"><div class="placeholder" id="localPlaceholder">CAMERA STANDBY</div><video id="localVideo" autoplay playsinline muted></video></div></div>
-<div class="bottom"><span>SECURE CONNECTION: TEST ONLY / WEBRTC + LIVEKIT</span><span>© TAMON HAZARD EVENT TEST</span></div>
+<div id="viewerGrid" class="grid"></div>
+<div id="publisherPreview" class="feed"><div class="feed-head"><strong>LOCAL CAMERA PREVIEW</strong><span class="right"><span class="state" id="localMic">MIC OFF</span><span class="state" id="localState">STANDBY</span></span></div><div class="screen"><div class="placeholder">CAMERA STANDBY</div><video id="localVideo" autoplay playsinline muted></video></div></div>
+<div class="bottom"><span>SECURE CONNECTION: WEBRTC + LIVEKIT</span><span>© TAMON HAZARD EVENT</span></div>
 </main>
 <script type="module">
 import {Room,RoomEvent,Track,TokenSource} from 'https://cdn.jsdelivr.net/npm/livekit-client@2.17.2/dist/livekit-client.esm.mjs';
-// Development token server ID is the hostname prefix of the user-provided sandbox URL.
+/* ===== 設定 ===== */
+const PASSWORD='1024';               // ← パスワード（ここを書き換える）
 const TOKEN_SERVER_ID='tamonhazardtest-x6zc3r';
 const ROOM_NAME='tamon-hazard-camera-test';
-const source=TokenSource.sandboxTokenServer(TOKEN_SERVER_ID);
-if (typeof TokenSource.sandboxTokenServer !== 'function') { document.getElementById('status').textContent='LiveKit SDKの読み込みバージョンを確認してください。'; throw new Error('LiveKit token source unavailable'); }
+const CAMS=['CAM 01 / ZONE A','CAM 02 / ZONE B','CAM 03 / ZONE C','CAM 04 / ZONE D','CAM 05 / ZONE E'];
+/* ================ */
 const $=id=>document.getElementById(id);
-let role='viewer',room=null,busy=false,audioEnabled=false,localStream=null,front=false;
-const attached=new Map();
-function setStatus(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error);log(message)}
-function log(message){const el=$('log');el.textContent=`${new Date().toLocaleTimeString('ja-JP')} ${message}\n`+el.textContent.slice(0,1600)}
-function buttons(){const connected=!!room; $('startPublish').disabled=busy||connected;$('startWatch').disabled=busy||connected;$('stopPublish').disabled=busy||!connected;$('stopWatch').disabled=busy||!connected;$('flipCamera').disabled=busy||!connected||role!=='publisher';$('enableSound').disabled=busy||!connected||role!=='viewer';$('cameraSelect').disabled=busy||connected;$('roleViewer').disabled=busy||connected;$('rolePublisher').disabled=busy||connected;}
-function setRole(next){if(room||busy)return;role=next;document.body.className=role;$('roleViewer').classList.toggle('active',role==='viewer');$('rolePublisher').classList.toggle('active',role==='publisher');setStatus(role==='viewer'?'「監視モニター開始」で4画面を待ち受けます。':'カメラ番号を選んで「配信開始」を押してください。');buttons()}
+function setStatus(m,err=false){$('status').textContent=m;$('status').classList.toggle('error',err);log(m)}
+function log(m){const el=$('log');el.textContent=`${new Date().toLocaleTimeString('ja-JP')} ${m}\n`+el.textContent.slice(0,1600)}
+if(typeof TokenSource?.sandboxTokenServer!=='function'){setStatus('LiveKit SDKの読み込みバージョンを確認してください。',true);throw new Error('LiveKit token source unavailable')}
+const source=TokenSource.sandboxTokenServer(TOKEN_SERVER_ID);
+
+/* --- パスワード --- */
+let unlocked=false;
+try{unlocked=sessionStorage.getItem('th_ok')==='1'}catch(e){}
+if(unlocked)$('lock').classList.add('hidden');
+function tryUnlock(){
+  if($('lockInput').value===PASSWORD){unlocked=true;try{sessionStorage.setItem('th_ok','1')}catch(e){}$('lock').classList.add('hidden')}
+  else{$('lockMsg').textContent='パスワードが違います';$('lockInput').value='';const b=document.querySelector('.lockbox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+}
+$('lockBtn').onclick=tryUnlock;$('lockInput').onkeydown=e=>{if(e.key==='Enter')tryUnlock()};
+
+/* --- 状態 --- */
+let role='viewer',room=null,busy=false,manualStop=false,micOn=false,front=false,wl=null,retryTimer=null;
+const attached=new Map();      // track.sid -> {element,cam,pub,kind}
+const audioOn={};              // cam -> 視聴側で音を出すか
+
+/* --- 視聴グリッド生成 --- */
+$('viewerGrid').innerHTML=CAMS.map((n,i)=>`<div class="feed" id="feed${i+1}"><div class="feed-head"><strong>${n}</strong><span class="right"><button class="snd" data-cam="${i+1}" type="button" disabled>🔇 NO MIC</button><span class="state">NO SIGNAL</span></span></div><div class="screen"><div class="placeholder">⌁<br>NO SIGNAL</div><span class="ts"></span></div></div>`).join('');
+setInterval(()=>{const t=new Date().toLocaleString('ja-JP',{hour12:false});document.querySelectorAll('.ts').forEach(e=>e.textContent=t)},1000);
+
+/* --- 画面スリープ防止 --- */
+async function keepAwake(){try{if('wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}}catch(e){}}
+function releaseAwake(){try{wl?.release()}catch(e){}wl=null}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&room)keepAwake()});
+
+function buttons(){const c=!!room;
+  $('startPublish').disabled=busy||c;$('startWatch').disabled=busy||c;
+  $('stopPublish').disabled=busy||!c;$('stopWatch').disabled=busy||!c;
+  $('flipCamera').disabled=busy||!c||role!=='publisher';
+  $('cameraSelect').disabled=busy||c;$('roleViewer').disabled=busy||c;$('rolePublisher').disabled=busy||c}
+function setRole(next){if(room||busy)return;role=next;document.body.className=role;
+  $('roleViewer').classList.toggle('active',role==='viewer');$('rolePublisher').classList.toggle('active',role==='publisher');
+  setStatus(role==='viewer'?'「監視モニター開始」で待ち受けます。':'カメラ番号を選び、必要ならマイクをONにして「配信開始」を押してください。');buttons()}
 $('roleViewer').onclick=()=>setRole('viewer');$('rolePublisher').onclick=()=>setRole('publisher');
-function camFromParticipant(p){const name=p?.name||p?.identity||'';const m=name.match(/^CAM-([1-4])(?:-|$)/);return m?Number(m[1]):null}
-function cleanupTrack(track){const entry=attached.get(track.sid);if(entry){entry.element.remove();attached.delete(track.sid);const feed=$('feed'+entry.cam);if(feed&&!feed.querySelector('video')){feed.classList.remove('live');feed.querySelector('.state').textContent='NO SIGNAL'}}try{track.detach().forEach(e=>e.remove())}catch(e){}}
-function onSubscribed(track,pub,participant){if(role!=='viewer')return;const cam=camFromParticipant(participant);if(!cam){log('未割り当て参加者: '+(participant.name||participant.identity));return}const feed=$('feed'+cam);if(!feed)return;const media=track.attach();media.autoplay=true;media.playsInline=true;if(track.kind===Track.Kind.Video){for(const old of [...feed.querySelectorAll('video')])old.remove();media.muted=true;feed.querySelector('.screen').appendChild(media);feed.classList.add('live');feed.querySelector('.state').textContent='● LIVE';attached.set(track.sid,{element:media,cam})}else if(track.kind===Track.Kind.Audio){media.muted=!audioEnabled;media.style.display='none';feed.appendChild(media);attached.set(track.sid,{element:media,cam});if(audioEnabled)media.play().catch(()=>setStatus('音声再生がブロックされました。もう一度「音声を有効にする」を押してください。',true))}log(`CAM ${cam} ${track.kind} 受信`)}
-function onUnsubscribed(track){cleanupTrack(track)}
-function onParticipantLeft(participant){log('退出: '+(participant.name||participant.identity))}
-async function connect(){busy=true;buttons();try{setStatus('接続トークンを取得中…');const details=await source.fetch({roomName:ROOM_NAME,participantName:role==='publisher'?`CAM-${$('cameraSelect').value}-${Date.now()}`:`VIEWER-${Date.now()}`});room=new Room({adaptiveStream:true,dynacast:true});room.on(RoomEvent.TrackSubscribed,onSubscribed);room.on(RoomEvent.TrackUnsubscribed,onUnsubscribed);room.on(RoomEvent.ParticipantDisconnected,onParticipantLeft);room.on(RoomEvent.Disconnected,()=>{if(room){setStatus('通信が切断されました。再接続する場合はページを再読み込みしてください。',true)}});await room.connect(details.serverUrl,details.participantToken);setStatus('LiveKitに接続しました。');return true}catch(e){setStatus('接続失敗: '+(e.message||e),true);if(room){await room.disconnect().catch(()=>{});room=null}return false}finally{busy=false;buttons()}}
-$('startWatch').onclick=async()=>{if(await connect()){setStatus('監視中。撮影側が配信すると対応するCAMに表示されます。');$('enableSound').disabled=false;}}
-$('startPublish').onclick=async()=>{const ok=await connect();if(!ok)return;try{setStatus('カメラとマイクの許可を確認中…');await room.localParticipant.setCameraEnabled(true,{facingMode:'environment'});await room.localParticipant.setMicrophoneEnabled(true);const cameraPub=room.localParticipant.getTrackPublication(Track.Source.Camera);if(cameraPub?.track){const element=cameraPub.track.attach($('localVideo'));element.muted=true;element.play().catch(()=>{});} $('localState').textContent='● ON AIR';setStatus(`CAM ${$('cameraSelect').value} 配信中！ 別端末の監視画面を確認してください。`)}catch(e){setStatus('カメラ起動失敗: '+(e.message||e),true);await stop()}}
-$('enableSound').onclick=async()=>{audioEnabled=!audioEnabled;try{if(audioEnabled)await room.startAudio();for(const {element} of attached.values()){if(element.tagName==='AUDIO'){element.muted=!audioEnabled;if(audioEnabled)await element.play().catch(()=>{})}}$('enableSound').textContent=audioEnabled?'🔊 音声ON（押すとOFF）':'🔇 音声を有効にする';setStatus(audioEnabled?'音声を有効にしました。ハウリングに注意してください。':'音声をミュートしました。')}catch(e){setStatus('音声再生エラー: '+e.message,true)}};
-$('flipCamera').onclick=async()=>{try{front=!front;await room.localParticipant.setCameraEnabled(false);await room.localParticipant.setCameraEnabled(true,{facingMode:front?'user':'environment'});const pub=room.localParticipant.getTrackPublication(Track.Source.Camera);if(pub?.track){$('localVideo').srcObject=null;pub.track.attach($('localVideo'));$('localVideo').muted=true}setStatus('カメラを切り替えました。')}catch(e){setStatus('切替できません: '+e.message,true)}};
-async function stop(){busy=true;buttons();try{if(room){await room.disconnect();room=null}for(const item of attached.values())item.element.remove();attached.clear();for(let i=1;i<=4;i++){const f=$('feed'+i);f.classList.remove('live');f.querySelector('.state').textContent='NO SIGNAL'}$('localVideo').srcObject=null;$('localState').textContent='STANDBY';audioEnabled=false;$('enableSound').textContent='🔇 音声を有効にする';setStatus('停止しました。')}finally{busy=false;buttons()}}
+
+/* --- 全画面 --- */
+$('fsBtn').onclick=()=>{try{const d=document.documentElement;const f=d.requestFullscreen||d.webkitRequestFullscreen;if(!f)throw 0;f.call(d)}catch(e){setStatus('このブラウザでは全画面にできません。共有ボタンの「ホーム画面に追加」から開くと全画面で使えます。',true)}};
+
+/* --- 撮影側：マイク --- */
+function micUI(){$('micBtn').textContent=micOn?'🎙 マイク ON':'🎙 マイク OFF';$('micBtn').classList.toggle('on',micOn);$('localMic').textContent=micOn?'MIC ON':'MIC OFF'}
+$('micBtn').onclick=async()=>{micOn=!micOn;micUI();
+  if(room&&role==='publisher'){try{await room.localParticipant.setMicrophoneEnabled(micOn);setStatus(micOn?'マイクをONにしました。':'マイクをOFFにしました。')}catch(e){micOn=!micOn;micUI();setStatus('マイクを切り替えできません: '+(e.message||e),true)}}};
+
+/* --- 視聴側：カメラごとの音声 --- */
+function camFromParticipant(p){const m=(p?.name||p?.identity||'').match(/^CAM-([1-5])(?:-|$)/);return m?Number(m[1]):null}
+function audioEntry(cam){for(const e of attached.values())if(e.cam===cam&&e.kind==='audio')return e;return null}
+function refreshSnd(cam){const b=document.querySelector(`.snd[data-cam="${cam}"]`);if(!b)return;const e=audioEntry(cam);
+  if(!e){b.disabled=true;b.classList.remove('on');b.textContent='🔇 NO MIC';return}
+  if(e.pub?.isMuted){b.disabled=true;b.classList.remove('on');b.textContent='🔇 MIC OFF';e.element.muted=true;return}
+  b.disabled=false;b.classList.toggle('on',!!audioOn[cam]);b.textContent=audioOn[cam]?'🔊 音声 ON':'🔇 音声 OFF';e.element.muted=!audioOn[cam]}
+document.querySelectorAll('.snd').forEach(b=>b.onclick=async()=>{const cam=Number(b.dataset.cam);audioOn[cam]=!audioOn[cam];
+  try{await room?.startAudio()}catch(e){}
+  const e=audioEntry(cam);if(e&&audioOn[cam])e.element.play().catch(()=>setStatus('音声再生がブロックされました。もう一度押してください。',true));
+  refreshSnd(cam)});
+
+function cleanupTrack(track){const e=attached.get(track.sid);
+  if(e){e.element.remove();attached.delete(track.sid);const feed=$('feed'+e.cam);
+    if(e.kind==='video'&&feed&&!feed.querySelector('video')){feed.classList.remove('live');feed.querySelector('.state').textContent='NO SIGNAL'}
+    refreshSnd(e.cam)}
+  try{track.detach().forEach(x=>x.remove())}catch(err){}}
+function onSubscribed(track,pub,participant){
+  if(role!=='viewer')return;const cam=camFromParticipant(participant);
+  if(!cam){log('未割り当て参加者: '+(participant.name||participant.identity));return}
+  const feed=$('feed'+cam);if(!feed)return;
+  if(cam===5){feed.classList.add('show');$('viewerGrid').classList.add('five')}
+  const media=track.attach();media.autoplay=true;media.playsInline=true;
+  if(track.kind===Track.Kind.Video){
+    for(const [sid,e] of attached)if(e.cam===cam&&e.kind==='video'){e.element.remove();attached.delete(sid)}
+    media.muted=true;feed.querySelector('.screen').appendChild(media);feed.classList.add('live');feed.querySelector('.state').textContent='● LIVE';
+    attached.set(track.sid,{element:media,cam,pub,kind:'video'})
+  }else if(track.kind===Track.Kind.Audio){
+    media.muted=!audioOn[cam];media.style.display='none';feed.appendChild(media);
+    attached.set(track.sid,{element:media,cam,pub,kind:'audio'});refreshSnd(cam)
+  }
+  log(`CAM ${cam} ${track.kind} 受信`)}
+function onMute(pub,participant){const cam=camFromParticipant(participant);if(cam&&pub.kind==='audio')refreshSnd(cam)}
+
+function resetFeeds(){for(const e of attached.values())e.element.remove();attached.clear();
+  for(let i=1;i<=CAMS.length;i++){const f=$('feed'+i);f.classList.remove('live');f.querySelector('.state').textContent='NO SIGNAL';refreshSnd(i)}
+  $('localVideo').srcObject=null;$('localState').textContent='STANDBY'}
+
+/* --- 接続 --- */
+async function connect(){
+  if(!unlocked){setStatus('パスワードが必要です。ページを再読み込みしてください。',true);return false}
+  busy=true;buttons();
+  try{
+    setStatus('接続トークンを取得中…');
+    const details=await source.fetch({roomName:ROOM_NAME,participantName:role==='publisher'?`CAM-${$('cameraSelect').value}-${Date.now()}`:`VIEWER-${Date.now()}`});
+    const r=new Room({adaptiveStream:true,dynacast:true,videoCaptureDefaults:{resolution:{width:960,height:540,frameRate:24}}});
+    r.on(RoomEvent.TrackSubscribed,onSubscribed);
+    r.on(RoomEvent.TrackUnsubscribed,cleanupTrack);
+    r.on(RoomEvent.TrackMuted,onMute);r.on(RoomEvent.TrackUnmuted,onMute);
+    r.on(RoomEvent.Reconnecting,()=>setStatus('通信が不安定です。再接続しています…',true));
+    r.on(RoomEvent.Reconnected,()=>setStatus('再接続しました。'));
+    r.on(RoomEvent.Disconnected,()=>{if(r!==room||manualStop)return;room=null;resetFeeds();buttons();setStatus('切断されました。自動で再接続します…',true);scheduleRetry()});
+    room=r;
+    await r.connect(details.serverUrl,details.participantToken,{autoSubscribe:role==='viewer'});
+    keepAwake();setStatus('LiveKitに接続しました。');return true
+  }catch(e){setStatus('接続失敗: '+(e.message||e),true);if(room){await room.disconnect().catch(()=>{});room=null}return false}
+  finally{busy=false;buttons()}}
+function scheduleRetry(){clearTimeout(retryTimer);retryTimer=setTimeout(async()=>{if(manualStop||room)return;const ok=await(role==='publisher'?startPublish():startWatch());if(!ok&&!manualStop)scheduleRetry()},4000)}
+
+async function startWatch(){manualStop=false;if(!await connect())return false;setStatus('監視中。撮影側が配信すると対応するCAMに表示されます。');return true}
+async function startPublish(){manualStop=false;if(!await connect())return false;
+  try{
+    setStatus('カメラの許可を確認中…');
+    await room.localParticipant.setCameraEnabled(true,{facingMode:front?'user':'environment'});
+    if(micOn){setStatus('マイクの許可を確認中…');await room.localParticipant.setMicrophoneEnabled(true)}
+    const pub=room.localParticipant.getTrackPublication(Track.Source.Camera);
+    if(pub?.track){const el=pub.track.attach($('localVideo'));el.muted=true;el.play().catch(()=>{})}
+    $('localState').textContent='● ON AIR';
+    setStatus(`CAM ${$('cameraSelect').value} 配信中！（マイク${micOn?'ON':'OFF'}）別端末の監視画面を確認してください。`);return true
+  }catch(e){setStatus('カメラ起動失敗: '+(e.message||e),true);await stop();return false}}
+$('startWatch').onclick=startWatch;$('startPublish').onclick=startPublish;
+
+$('flipCamera').onclick=async()=>{try{front=!front;await room.localParticipant.setCameraEnabled(false);await room.localParticipant.setCameraEnabled(true,{facingMode:front?'user':'environment'});
+  const pub=room.localParticipant.getTrackPublication(Track.Source.Camera);if(pub?.track){$('localVideo').srcObject=null;pub.track.attach($('localVideo'));$('localVideo').muted=true}setStatus('カメラを切り替えました。')}catch(e){setStatus('切替できません: '+(e.message||e),true)}};
+
+async function stop(){manualStop=true;clearTimeout(retryTimer);busy=true;buttons();
+  try{if(room){const r=room;room=null;await r.disconnect()}resetFeeds();releaseAwake();setStatus('停止しました。')}
+  finally{busy=false;buttons()}}
 $('stopWatch').onclick=stop;$('stopPublish').onclick=stop;
-setRole('viewer');
+micUI();setRole('viewer');
 </script>
 </body></html>
