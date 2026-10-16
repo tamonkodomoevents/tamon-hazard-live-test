@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TAMON HAZARD カメラテスト</title>
+  <style>
+    body {
+      background: #101820;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video {
+      width: 100%;
+      max-width: 600px;
+      background: black;
+      border-radius: 12px;
+    }
+    button {
+      padding: 15px 25px;
+      margin: 12px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎃 TAMON HAZARD</h2>
+  <p>カメラ・マイク動作テスト</p>
+
+  <video id="camera" autoplay playsinline muted></video>
+  <p id="status">待機中</p>
+
+  <button onclick="startCamera()">カメラ起動</button>
+  <button onclick="stopCamera()">停止</button>
+
+  <script>
+    let stream;
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+
+        document.getElementById("camera").srcObject = stream;
+        document.getElementById("status").textContent =
+          "カメラ・マイク接続成功！";
+      } catch (error) {
+        document.getElementById("status").textContent =
+          "エラー：" + error.name + " / " + error.message;
+      }
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      document.getElementById("camera").srcObject = null;
+      document.getElementById("status").textContent = "停止しました";
+    }
+  </script>
+</body>
+</html>
