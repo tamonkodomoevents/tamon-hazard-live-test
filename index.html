@@ -1,67 +1,25 @@
-
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TAMON HAZARD カメラテスト</title>
-  <style>
-    body {
-      background: #101820;
-      color: white;
-      font-family: sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    video {
-      width: 100%;
-      max-width: 600px;
-      background: black;
-      border-radius: 12px;
-    }
-    button {
-      padding: 15px 25px;
-      margin: 12px;
-      font-size: 18px;
-    }
-  </style>
-</head>
-<body>
-  <h2>🎃 TAMON HAZARD</h2>
-  <p>カメラ・マイク動作テスト</p>
-
-  <video id="camera" autoplay playsinline muted></video>
-  <p id="status">待機中</p>
-
-  <button onclick="startCamera()">カメラ起動</button>
-  <button onclick="stopCamera()">停止</button>
-
-  <script>
-    let stream;
-
-    async function startCamera() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
-
-        document.getElementById("camera").srcObject = stream;
-        document.getElementById("status").textContent =
-          "カメラ・マイク接続成功！";
-      } catch (error) {
-        document.getElementById("status").textContent =
-          "エラー：" + error.name + " / " + error.message;
-      }
-    }
-
-    function stopCamera() {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-      document.getElementById("camera").srcObject = null;
-      document.getElementById("status").textContent = "停止しました";
-    }
-  </script>
-</body>
-</html>
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAMON HAZARD | WebRTC 2台テスト</title><style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;background:#101820;color:#f1f5f9;margin:0;padding:18px;max-width:800px;margin-inline:auto}h1{font-size:1.45rem;color:#b7f7db}h2{font-size:1.05rem}p,li{line-height:1.55}button{background:#20b98b;color:#071914;border:0;border-radius:8px;padding:12px;font-size:1rem;font-weight:700;margin:5px 5px 5px 0}button.secondary{background:#334155;color:white}textarea{width:100%;min-height:100px;background:#172334;color:#f8fafc;border:1px solid #607086;border-radius:8px;padding:10px;font-size:12px;overflow-wrap:anywhere}video{background:#050b12;width:100%;aspect-ratio:16/9;object-fit:contain;border-radius:8px}section{border:1px solid #394b5b;border-radius:12px;padding:15px;margin:15px 0}small{color:#cbd5e1}.status{padding:10px;border-radius:8px;background:#213244;white-space:pre-wrap}label{display:block;margin:10px 0 4px;font-weight:700}.warn{color:#ffd38a}</style></head><body>
+<h1>🎃 TAMON HAZARD</h1><p>WebRTC 2台接続テスト（追加サーバーなし・手動コード交換）</p><p class="warn">学校の許可を得た端末・通信でテストしてください。実際の児童の映像は使わず、まず無人の場所を映してください。</p>
+<section><h2>① 撮影側 iPad</h2><button id="start">カメラ起動＆接続コード作成</button><video id="local" autoplay muted playsinline></video><label>撮影側が発行する「オファー」</label><textarea id="offer" readonly placeholder="ボタンを押すと長いコードが出ます"></textarea><button class="secondary" data-copy="offer">オファーをコピー</button><label>視聴側から受け取った「アンサー」を貼る</label><textarea id="answerIn" placeholder="視聴側で作成したアンサーを貼り付け"></textarea><button id="applyAnswer">アンサーを適用</button></section>
+<section><h2>② 視聴側 iPad</h2><label>撮影側の「オファー」を貼る</label><textarea id="offerIn" placeholder="撮影側でコピーしたオファーを貼り付け"></textarea><button id="createAnswer">オファーを読み込み＆アンサー作成</button><label>視聴側が発行する「アンサー」</label><textarea id="answer" readonly placeholder="ここにアンサーが出ます"></textarea><button class="secondary" data-copy="answer">アンサーをコピー</button><video id="remote" autoplay playsinline controls></video><button id="play" class="secondary">受信映像を再生・音声ON</button></section>
+<section><h2>接続状態</h2><div id="status" class="status">待機中</div><button id="reset" class="secondary">接続を終了してリセット</button><small>接続コードは長く、QR化や手入力には不向きです。GitHub Pagesはページの配信のみで、端末間の接続情報は中継しません。STUNサーバーを利用して経路を調べますが、TURN中継は使用しません。</small></section>
+<script>
+'use strict';
+let pc=null,stream=null,role=null;
+const $=id=>document.getElementById(id);
+const log=s=>{$('status').textContent=new Date().toLocaleTimeString()+' '+s+'\n'+$('status').textContent.slice(0,1200)};
+const iceServers=[{urls:'stun:stun.l.google.com:19302'}];
+function makePC(){if(pc)pc.close();pc=new RTCPeerConnection({iceServers});pc.oniceconnectionstatechange=()=>log('ICE: '+pc.iceConnectionState);pc.onconnectionstatechange=()=>log('接続: '+pc.connectionState);pc.onicecandidateerror=e=>log('ICE候補エラー: '+e.errorText);pc.ontrack=e=>{log('映像/音声を受信');$('remote').srcObject=e.streams[0]||new MediaStream([e.track]);$('remote').play().catch(()=>log('再生ボタンを押してください'))};return pc}
+async function gather(c){if(c.iceGatheringState==='complete')return;await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>{cleanup();reject(Error('ICE収集がタイムアウトしました'))},18000);function changed(){if(c.iceGatheringState==='complete'){cleanup();resolve()}}function cleanup(){clearTimeout(timeout);c.removeEventListener('icegatheringstatechange',changed)}c.addEventListener('icegatheringstatechange',changed)})}
+function encode(desc){return JSON.stringify({type:desc.type,sdp:desc.sdp})}
+function decode(value,type){let x=JSON.parse(value.trim());if(x.type!==type||typeof x.sdp!=='string')throw Error('正しい'+type+'コードではありません');return x}
+$('start').onclick=async()=>{try{role='sender';$('offer').value='';stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:360},frameRate:{ideal:15,max:20}},audio:true});$('local').srcObject=stream;let c=makePC();stream.getTracks().forEach(t=>c.addTrack(t,stream));await c.setLocalDescription(await c.createOffer());log('接続候補を収集中…');await gather(c);$('offer').value=encode(c.localDescription);log('オファー完成。視聴側に渡してください')}catch(e){log('撮影側エラー: '+e.message)}};
+$('createAnswer').onclick=async()=>{try{role='viewer';$('answer').value='';let c=makePC();await c.setRemoteDescription(decode($('offerIn').value,'offer'));await c.setLocalDescription(await c.createAnswer());log('接続候補を収集中…');await gather(c);$('answer').value=encode(c.localDescription);log('アンサー完成。撮影側に返してください')}catch(e){log('視聴側エラー: '+e.message)}};
+$('applyAnswer').onclick=async()=>{try{if(role!=='sender'||!pc)throw Error('先に撮影側のオファーを作成してください');await pc.setRemoteDescription(decode($('answerIn').value,'answer'));log('アンサーを適用。接続を待っています')}catch(e){log('適用エラー: '+e.message)}};
+$('play').onclick=()=>{$('remote').muted=false;$('remote').play().then(()=>log('再生中')).catch(e=>log('再生エラー: '+e.message))};
+$('reset').onclick=()=>{if(pc)pc.close();if(stream)stream.getTracks().forEach(t=>t.stop());pc=null;stream=null;role=null;$('local').srcObject=null;$('remote').srcObject=null;['offer','offerIn','answer','answerIn'].forEach(id=>$(id).value='');log('リセットしました')};
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{let el=$(b.dataset.copy);try{await navigator.clipboard.writeText(el.value);log('コピーしました')}catch(e){el.focus();el.select();log('自動コピー不可。選択したコードを手動コピーしてください')}});
+window.addEventListener('pagehide',()=>{if(pc)pc.close();if(stream)stream.getTracks().forEach(t=>t.stop())});
+</script></body></html>
