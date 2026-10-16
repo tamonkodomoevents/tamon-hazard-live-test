@@ -31,7 +31,8 @@ import {Room,RoomEvent,Track,TokenSource} from 'https://cdn.jsdelivr.net/npm/liv
 // Development token server ID is the hostname prefix of the user-provided sandbox URL.
 const TOKEN_SERVER_ID='tamonhazardtest-x6zc3r';
 const ROOM_NAME='tamon-hazard-camera-test';
-const source=TokenSource.developmentTokenServer(TOKEN_SERVER_ID);
+const source=TokenSource.sandboxTokenServer(TOKEN_SERVER_ID);
+if (typeof TokenSource.sandboxTokenServer !== 'function') { document.getElementById('status').textContent='LiveKit SDKの読み込みバージョンを確認してください。'; throw new Error('LiveKit token source unavailable'); }
 const $=id=>document.getElementById(id);
 let role='viewer',room=null,busy=false,audioEnabled=false,localStream=null,front=false;
 const attached=new Map();
