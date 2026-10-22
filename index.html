@@ -89,7 +89,7 @@ linear-gradient(var(--cy),var(--cy)) 100% 100%/16px 2px,linear-gradient(var(--cy
 </head>
 <body class="viewer">
 <div id="lock"><div class="lockbox"><div class="eyebrow">ACCESS CONTROL</div><h2>TAMON <span>HAZARD</span></h2><p>パスワードを入力してください</p>
-<input id="lockInput" type="password" inputmode="numeric" autocomplete="off" aria-label="パスワード"><button id="lockBtn" class="primary" type="button">認証</button><div id="lockMsg" role="alert"></div></div></div>
+<input id="lockInput" type="password" autocomplete="off" aria-label="パスワード"><button id="lockBtn" class="primary" type="button">認証</button><div id="lockMsg" role="alert"></div></div></div>
 <header><div><div class="eyebrow">TAMON RESEARCH FACILITY // SECURITY DIVISION</div><h1>TAMON <span>HAZARD</span></h1><small>SURVEILLANCE SYSTEM / 2026</small></div><div class="tag"><b>●</b> CONFIDENTIAL<br>NO RECORDING</div></header>
 <main>
 <div class="warning">関係者専用の監視画面です。録画はしません。画面・URLは外部に共有しないでください。</div>
@@ -104,11 +104,9 @@ linear-gradient(var(--cy),var(--cy)) 100% 100%/16px 2px,linear-gradient(var(--cy
 <div class="bottom"><span>SECURE CONNECTION: WEBRTC + LIVEKIT</span><span>© TAMON HAZARD EVENT</span></div>
 </main>
 <script type="module">
-import {Room,RoomEvent,Track,TokenSource,AudioPresets} from 'https://cdn.jsdelivr.net/npm/livekit-client@2.17.2/dist/livekit-client.esm.mjs';
+import {Room,RoomEvent,Track,AudioPresets} from 'https://cdn.jsdelivr.net/npm/livekit-client@2.17.2/dist/livekit-client.esm.mjs';
 /* ===== 設定 ===== */
-const PASSWORD='1024';               // ← パスワード（ここを書き換える）
-const TOKEN_SERVER_ID='tamonhazardtest-x6zc3r';
-const ROOM_NAME='tamon-hazard-camera-test';
+const AUTH_URL='https://tamon-hazard-auth.piratesais.workers.dev';
 /* 撮影側の画質（6画面並べた時のタイル幅に合わせた設定。重い時は BITRATE を下げる） */
 const VIDEO={width:640,height:360,fps:15,bitrate:400_000};   // 360p / 15fps / 最大400kbps
 const CAMS=['CAM 01 / ZONE A','CAM 02 / ZONE B','CAM 03 / ZONE C','CAM 04 / ZONE D','CAM 05 / ZONE E','CAM 06 / ZONE F'];
@@ -116,16 +114,36 @@ const CAMS=['CAM 01 / ZONE A','CAM 02 / ZONE B','CAM 03 / ZONE C','CAM 04 / ZONE
 const $=id=>document.getElementById(id);
 function setStatus(m,err=false){$('status').textContent=m;$('status').classList.toggle('error',err);log(m)}
 function log(m){const el=$('log');el.textContent=`${new Date().toLocaleTimeString('ja-JP')} ${m}\n`+el.textContent.slice(0,1600)}
-if(typeof TokenSource?.sandboxTokenServer!=='function'){setStatus('LiveKit SDKの読み込みバージョンを確認してください。',true);throw new Error('LiveKit token source unavailable')}
-const source=TokenSource.sandboxTokenServer(TOKEN_SERVER_ID);
-
-/* --- パスワード --- */
+/* --- Cloudflare Worker認証。パスワードは端末のメモリだけに保持 --- */
 let unlocked=false;
-try{unlocked=sessionStorage.getItem('th_ok')==='1'}catch(e){}
-if(unlocked)$('lock').classList.add('hidden');
-function tryUnlock(){
-  if($('lockInput').value===PASSWORD){unlocked=true;try{sessionStorage.setItem('th_ok','1')}catch(e){}$('lock').classList.add('hidden')}
-  else{$('lockMsg').textContent='パスワードが違います';$('lockInput').value='';const b=document.querySelector('.lockbox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+let accessPassword='';
+let unlocking=false;
+async function requestToken(requestRole, cameraNumber) {
+  const response=await fetch(AUTH_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    cache:'no-store',
+    body:JSON.stringify({password:accessPassword,role:requestRole,cameraNumber})
+  });
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(response.status===401?'パスワードが違います':(result.error||`認証サーバーのエラー (${response.status})`));
+  if(!result.serverUrl||!result.participantToken)throw new Error('接続情報が取得できませんでした');
+  return result;
+}
+async function tryUnlock(){
+  if(unlocking)return;
+  accessPassword=$('lockInput').value;
+  if(!accessPassword){$('lockMsg').textContent='パスワードを入力してください';return}
+  unlocking=true;$('lockBtn').disabled=true;$('lockMsg').textContent='認証中…';
+  try{
+    await requestToken('viewer');
+    unlocked=true;$('lockInput').value='';$('lockMsg').textContent='';
+    $('lock').classList.add('hidden');
+  }catch(e){
+    accessPassword='';$('lockInput').value='';
+    $('lockMsg').textContent=e.message||'認証に失敗しました';
+    const b=document.querySelector('.lockbox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+  }finally{unlocking=false;$('lockBtn').disabled=false}
 }
 $('lockBtn').onclick=tryUnlock;$('lockInput').onkeydown=e=>{if(e.key==='Enter')tryUnlock()};
 
@@ -241,7 +259,7 @@ async function connect(){
   busy=true;buttons();
   try{
     setStatus('接続トークンを取得中…');
-    const details=await source.fetch({roomName:ROOM_NAME,participantName:role==='publisher'?`CAM-${$('cameraSelect').value}-${Date.now()}`:`VIEWER-${Date.now()}`});
+    const details=await requestToken(role,role==='publisher'?$('cameraSelect').value:undefined);
     const r=new Room({adaptiveStream:true,dynacast:true,
       videoCaptureDefaults:{resolution:{width:VIDEO.width,height:VIDEO.height,frameRate:VIDEO.fps}},
       publishDefaults:{simulcast:false,videoEncoding:{maxBitrate:VIDEO.bitrate,maxFramerate:VIDEO.fps},audioPreset:AudioPresets.speech,dtx:true,red:false}});
