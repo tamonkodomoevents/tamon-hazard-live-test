@@ -104,9 +104,11 @@ linear-gradient(var(--cy),var(--cy)) 100% 100%/16px 2px,linear-gradient(var(--cy
 <div class="bottom"><span>SECURE CONNECTION: WEBRTC + LIVEKIT</span><span>© TAMON HAZARD EVENT</span></div>
 </main>
 <script type="module">
-import {Room,RoomEvent,Track,AudioPresets} from 'https://cdn.jsdelivr.net/npm/livekit-client@2.17.2/dist/livekit-client.esm.mjs';
+import {Room,RoomEvent,Track,TokenSource,AudioPresets} from 'https://cdn.jsdelivr.net/npm/livekit-client@2.17.2/dist/livekit-client.esm.mjs';
 /* ===== 設定 ===== */
-const AUTH_URL='https://tamon-hazard-auth.piratesais.workers.dev';
+const PASSWORD='1024'; // ローカル画面用パスワード（必要なら変更）
+const TOKEN_SERVER_ID='tamonhazardtest-x6zc3r';
+const ROOM_NAME='tamon-hazard-camera-test';
 /* 撮影側の画質（6画面並べた時のタイル幅に合わせた設定。重い時は BITRATE を下げる） */
 const VIDEO={width:640,height:360,fps:15,bitrate:400_000};   // 360p / 15fps / 最大400kbps
 const CAMS=['CAM 01 / ZONE A','CAM 02 / ZONE B','CAM 03 / ZONE C','CAM 04 / ZONE D','CAM 05 / ZONE E','CAM 06 / ZONE F'];
@@ -114,38 +116,26 @@ const CAMS=['CAM 01 / ZONE A','CAM 02 / ZONE B','CAM 03 / ZONE C','CAM 04 / ZONE
 const $=id=>document.getElementById(id);
 function setStatus(m,err=false){$('status').textContent=m;$('status').classList.toggle('error',err);log(m)}
 function log(m){const el=$('log');el.textContent=`${new Date().toLocaleTimeString('ja-JP')} ${m}\n`+el.textContent.slice(0,1600)}
-/* --- Cloudflare Worker認証。パスワードは端末のメモリだけに保持 --- */
+/* --- 旧Sandbox Token Server方式 --- */
+const source=TokenSource.sandboxTokenServer(TOKEN_SERVER_ID);
 let unlocked=false;
-let accessPassword='';
-let unlocking=false;
-async function requestToken(requestRole, cameraNumber) {
-  const response=await fetch(AUTH_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    cache:'no-store',
-    body:JSON.stringify({password:accessPassword,role:requestRole,cameraNumber})
-  });
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(response.status===401?'パスワードが違います':(result.error||`認証サーバーのエラー (${response.status})`));
-  if(!result.serverUrl||!result.participantToken)throw new Error('接続情報が取得できませんでした');
-  return result;
-}
-async function tryUnlock(){
-  if(unlocking)return;
-  accessPassword=$('lockInput').value;
-  if(!accessPassword){$('lockMsg').textContent='パスワードを入力してください';return}
-  unlocking=true;$('lockBtn').disabled=true;$('lockMsg').textContent='認証中…';
-  try{
-    await requestToken('viewer');
-    unlocked=true;$('lockInput').value='';$('lockMsg').textContent='';
+try{unlocked=sessionStorage.getItem('th_ok')==='1'}catch(e){}
+if(unlocked)$('lock').classList.add('hidden');
+function tryUnlock(){
+  if($('lockInput').value===PASSWORD){
+    unlocked=true;
+    try{sessionStorage.setItem('th_ok','1')}catch(e){}
+    $('lockInput').value='';
     $('lock').classList.add('hidden');
-  }catch(e){
-    accessPassword='';$('lockInput').value='';
-    $('lockMsg').textContent=e.message||'認証に失敗しました';
-    const b=document.querySelector('.lockbox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
-  }finally{unlocking=false;$('lockBtn').disabled=false}
+  }else{
+    $('lockMsg').textContent='パスワードが違います';
+    $('lockInput').value='';
+    const b=document.querySelector('.lockbox');
+    b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+  }
 }
-$('lockBtn').onclick=tryUnlock;$('lockInput').onkeydown=e=>{if(e.key==='Enter')tryUnlock()};
+$('lockBtn').onclick=tryUnlock;
+$('lockInput').onkeydown=e=>{if(e.key==='Enter')tryUnlock()};
 
 /* --- 状態 --- */
 let role='viewer',room=null,busy=false,manualStop=false,micOn=false,micBusy=false,front=false,wl=null,retryTimer=null;
@@ -259,7 +249,7 @@ async function connect(){
   busy=true;buttons();
   try{
     setStatus('接続トークンを取得中…');
-    const details=await requestToken(role,role==='publisher'?$('cameraSelect').value:undefined);
+    const details=await source.fetch({roomName:ROOM_NAME,participantName:role==='publisher'?`CAM-${$('cameraSelect').value}-${Date.now()}`:`VIEWER-${Date.now()}`});
     const r=new Room({adaptiveStream:true,dynacast:true,
       videoCaptureDefaults:{resolution:{width:VIDEO.width,height:VIDEO.height,frameRate:VIDEO.fps}},
       publishDefaults:{simulcast:false,videoEncoding:{maxBitrate:VIDEO.bitrate,maxFramerate:VIDEO.fps},audioPreset:AudioPresets.speech,dtx:true,red:false}});
